@@ -21,16 +21,39 @@ class Bot:
         self._updater.idle()
     
     def _init_handlers(self):
-        self._updater.dispatcher.add_handler(CommandHandler('rate', self._check_rate))
+        self._updater.dispatcher.add_handler(
+            CommandHandler('bitcoin', self._get_bitcoin_price))
+        self._updater.dispatcher.add_handler(
+            CommandHandler('bitcoin_cash', self._get_bitcoin_cash_price))
+        self._updater.dispatcher.add_handler(
+            CommandHandler('bitcoin_gold', self._get_bitcoin_gold_price))
     
     @staticmethod
-    def _check_rate(bot, update):
+    def _get_bitcoin_price(bot, update):
         message = update.message
-        
-        url = "https://api.coindesk.com/v1/bpi/currentprice.json"
-        
-        response = requests.get(url)
-        rate = response.json()['bpi']['USD']['rate_float']
-        
-        text = "Current Bitcoin rate - ${}".format(rate)
+
+        text = "Current Bitcoin price - ${}".format(Bot._get_price("bitcoin"))
         bot.send_message(chat_id=message.chat_id, text=text)
+
+    @staticmethod
+    def _get_bitcoin_cash_price(bot, update):
+        message = update.message
+    
+        text = "Current Bitcoin Cash price - ${}".format(
+            Bot._get_price("bitcoin-cash"))
+        bot.send_message(chat_id=message.chat_id, text=text)
+
+    @staticmethod
+    def _get_bitcoin_gold_price(bot, update):
+        message = update.message
+    
+        text = "Current Bitcoin Gold price - ${}".format(
+            Bot._get_price("bitcoin-gold"))
+        bot.send_message(chat_id=message.chat_id, text=text)
+
+    @staticmethod
+    def _get_price(name):
+        url = "https://api.coinmarketcap.com/v1/ticker/{}"
+    
+        response = requests.get(url.format(name))
+        return response.json()[0]['price_usd']

@@ -1,0 +1,8 @@
+# Byte-compiled files
+__pycache__/
+
+# PyCharm files
+.idea/
+
+#Virtualenv directory
+venv/
