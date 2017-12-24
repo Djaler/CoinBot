@@ -1,7 +1,7 @@
 import os
 
 import requests
-from telegram.ext import CommandHandler, Updater
+from telegram.ext import RegexHandler, Updater
 
 
 class Bot:
@@ -22,38 +22,21 @@ class Bot:
     
     def _init_handlers(self):
         self._updater.dispatcher.add_handler(
-            CommandHandler('bitcoin', self._get_bitcoin_price))
-        self._updater.dispatcher.add_handler(
-            CommandHandler('bitcoin_cash', self._get_bitcoin_cash_price))
-        self._updater.dispatcher.add_handler(
-            CommandHandler('bitcoin_gold', self._get_bitcoin_gold_price))
+            RegexHandler("^/([a-z_]+)$", self._get_currency_price,
+                         pass_groups=True))
+
+    def _get_currency_price(self, bot, update, groups):
+        currency = groups[0]
+    
+        info = self._get_info(currency.replace("_", "-"))
+    
+        text = "Current {} price - ${}".format(info["name"], info["price_usd"])
+    
+        bot.send_message(chat_id=update.message.chat_id, text=text)
     
     @staticmethod
-    def _get_bitcoin_price(bot, update):
-        message = update.message
-
-        text = "Current Bitcoin price - ${}".format(Bot._get_price("bitcoin"))
-        bot.send_message(chat_id=message.chat_id, text=text)
-
-    @staticmethod
-    def _get_bitcoin_cash_price(bot, update):
-        message = update.message
-    
-        text = "Current Bitcoin Cash price - ${}".format(
-            Bot._get_price("bitcoin-cash"))
-        bot.send_message(chat_id=message.chat_id, text=text)
-
-    @staticmethod
-    def _get_bitcoin_gold_price(bot, update):
-        message = update.message
-    
-        text = "Current Bitcoin Gold price - ${}".format(
-            Bot._get_price("bitcoin-gold"))
-        bot.send_message(chat_id=message.chat_id, text=text)
-
-    @staticmethod
-    def _get_price(name):
+    def _get_info(name):
         url = "https://api.coinmarketcap.com/v1/ticker/{}"
-    
+
         response = requests.get(url.format(name))
-        return response.json()[0]['price_usd']
+        return response.json()[0]
