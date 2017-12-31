@@ -9,7 +9,9 @@ class Bot:
         self._token = token
         self._updater = Updater(token)
         self._debug = debug
-        
+
+        self._session = requests.Session()
+
         self._init_handlers()
     
     def run(self):
@@ -34,9 +36,8 @@ class Bot:
     
         bot.send_message(chat_id=update.message.chat_id, text=text)
     
-    @staticmethod
-    def _get_info(name):
+    def _get_info(self, name):
         url = "https://api.coinmarketcap.com/v1/ticker/{}"
 
-        response = requests.get(url.format(name))
+        response = self._session.get(url.format(name))
         return response.json()[0]
