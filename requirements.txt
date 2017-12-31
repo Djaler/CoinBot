@@ -1,2 +1,0 @@
-requests
-python-telegram-bot==5.3.1
