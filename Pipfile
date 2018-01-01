@@ -13,3 +13,6 @@ python-telegram-bot = "*"
 
 [dev-packages]
 
+
+[requires]
+python_full_version = "3.6.3"
