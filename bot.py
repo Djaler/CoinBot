@@ -3,6 +3,8 @@ import os
 import requests
 from telegram.ext import RegexHandler, Updater
 
+from config import URL, PORT
+
 
 class Bot:
     def __init__(self, token, debug=False):
@@ -15,11 +17,9 @@ class Bot:
         self._init_handlers()
     
     def run(self):
-        port = int(os.environ.get('PORT', '5000'))
-        self._updater.start_webhook(listen='0.0.0.0', port=port,
+        self._updater.start_webhook(listen='0.0.0.0', port=PORT,
                                     url_path=self._token)
-        self._updater.bot.set_webhook(os.environ.get("URL") +
-                                      self._token)
+        self._updater.bot.set_webhook(URL + self._token)
         self._updater.idle()
     
     def _init_handlers(self):

@@ -1,9 +1,5 @@
-import os
-
 from bot import Bot
+from config import TOKEN
 
-
-token = os.environ.get("TOKEN")
-
-bot = Bot(token)
+bot = Bot(TOKEN)
 bot.run()
