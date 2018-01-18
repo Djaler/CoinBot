@@ -4,6 +4,7 @@ import requests
 from telegram.ext import RegexHandler, Updater
 
 from config import URL, PORT
+from utils import format_thousands
 
 
 class Bot:
@@ -32,7 +33,7 @@ class Bot:
     
         info = self._get_info(currency.replace("_", "-"))
     
-        text = "Current {} price - ${}".format(info["name"], info["price_usd"])
+        text = "Current {} price - ${}".format(info["name"], format_thousands(info["price_usd"], sep=" "))
     
         bot.send_message(chat_id=update.message.chat_id, text=text)
     
