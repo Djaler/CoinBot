@@ -15,4 +15,4 @@ python-telegram-bot = "*"
 
 
 [requires]
-python_full_version = "3.6.3"
+python_full_version = "3.7.5"
