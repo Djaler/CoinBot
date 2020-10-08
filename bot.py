@@ -3,7 +3,7 @@ import os
 import requests
 from telegram.ext import RegexHandler, Updater
 
-from config import URL, PORT
+from config import URL, PORT, API_KEY
 from utils import format_thousands
 
 
@@ -14,6 +14,10 @@ class Bot:
         self._debug = debug
 
         self._session = requests.Session()
+        headers = {
+        	'X-CMC_PRO_API_KEY': API_KEY,
+        }
+        self._session.headers.update(headers)
 
         self._init_handlers()
     
@@ -33,12 +37,12 @@ class Bot:
     
         info = self._get_info(currency.replace("_", "-"))
     
-        text = "Current {} price - ${}".format(info["name"], format_thousands(info["price_usd"], sep=" "))
+        text = "Current {} price - ${}".format(info["name"], format_thousands(info["quote"]["USD"]["price"], sep=" "))
     
         bot.send_message(chat_id=update.message.chat_id, text=text)
     
     def _get_info(self, name):
-        url = "https://api.coinmarketcap.com/v1/ticker/{}"
+        url = "http://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?slug={}"
 
         response = self._session.get(url.format(name))
-        return response.json()[0]
+        return list(response.json()['data'].values())[0]
